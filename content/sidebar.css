@@ -1,0 +1,549 @@
+/* YouTube AI Summarizer Sidebar Styles */
+#yt-ai-summarizer-sidebar {
+  --sidebar-bg: #0f0f0f;
+  --sidebar-bg-secondary: #1a1a1a;
+  --sidebar-bg-tertiary: #272727;
+  --sidebar-text: #f1f1f1;
+  --sidebar-text-secondary: #aaaaaa;
+  --sidebar-accent: #ff0000;
+  --sidebar-accent-hover: #cc0000;
+  --sidebar-border: #3f3f3f;
+  --sidebar-success: #2ecc71;
+  --sidebar-error: #e74c3c;
+  --sidebar-radius: 8px;
+  --sidebar-transition: 0.2s ease;
+  
+  position: fixed;
+  top: 60px;
+  right: 0;
+  width: 380px;
+  height: calc(100vh - 60px);
+  background: var(--sidebar-bg);
+  border-left: 1px solid var(--sidebar-border);
+  z-index: 9999;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--sidebar-transition);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#yt-ai-summarizer-sidebar.left {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--sidebar-border);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#yt-ai-summarizer-sidebar.collapsed {
+  transform: translateX(100%);
+}
+
+#yt-ai-summarizer-sidebar.collapsed.left {
+  transform: translateX(-100%);
+}
+
+/* Toggle Button */
+.yt-ai-toggle-btn {
+  position: absolute;
+  top: 50%;
+  left: -40px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 72px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--sidebar-border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sidebar-text-secondary);
+  transition: all var(--sidebar-transition);
+}
+
+.left .yt-ai-toggle-btn {
+  left: auto;
+  right: -40px;
+  border-left: none;
+  border-right: 1px solid var(--sidebar-border);
+  border-radius: 0 8px 8px 0;
+}
+
+.yt-ai-toggle-btn:hover {
+  background: var(--sidebar-bg-secondary);
+  color: var(--sidebar-text);
+}
+
+.yt-ai-toggle-btn svg {
+  transition: transform var(--sidebar-transition);
+}
+
+.collapsed .yt-ai-toggle-btn svg {
+  transform: rotate(180deg);
+}
+
+.left .yt-ai-toggle-btn svg {
+  transform: rotate(180deg);
+}
+
+.left.collapsed .yt-ai-toggle-btn svg {
+  transform: rotate(0deg);
+}
+
+/* Header */
+.yt-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--sidebar-border);
+  background: var(--sidebar-bg-secondary);
+}
+
+.yt-ai-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sidebar-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yt-ai-header-logo {
+  width: 24px;
+  height: 24px;
+  background: var(--sidebar-accent);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yt-ai-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.yt-ai-icon-btn {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--sidebar-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--sidebar-transition);
+}
+
+.yt-ai-icon-btn:hover {
+  background: var(--sidebar-bg-tertiary);
+  color: var(--sidebar-text);
+}
+
+/* Tabs */
+.yt-ai-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--sidebar-border);
+  background: var(--sidebar-bg-secondary);
+}
+
+.yt-ai-tab {
+  flex: 1;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  color: var(--sidebar-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--sidebar-transition);
+  position: relative;
+}
+
+.yt-ai-tab:hover {
+  color: var(--sidebar-text);
+  background: var(--sidebar-bg-tertiary);
+}
+
+.yt-ai-tab.active {
+  color: var(--sidebar-accent);
+}
+
+.yt-ai-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--sidebar-accent);
+}
+
+/* Content Area */
+.yt-ai-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.yt-ai-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.yt-ai-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.yt-ai-content::-webkit-scrollbar-thumb {
+  background: var(--sidebar-border);
+  border-radius: 4px;
+}
+
+.yt-ai-content::-webkit-scrollbar-thumb:hover {
+  background: var(--sidebar-text-secondary);
+}
+
+/* Tab Panels */
+.yt-ai-panel {
+  display: none;
+}
+
+.yt-ai-panel.active {
+  display: block;
+}
+
+/* Transcript Panel */
+.yt-ai-transcript-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  margin-bottom: 4px;
+  border-radius: var(--sidebar-radius);
+  cursor: pointer;
+  transition: background var(--sidebar-transition);
+}
+
+.yt-ai-transcript-item:hover {
+  background: var(--sidebar-bg-tertiary);
+}
+
+.yt-ai-timestamp {
+  color: var(--sidebar-accent);
+  font-size: 12px;
+  font-family: monospace;
+  min-width: 50px;
+  font-weight: 500;
+}
+
+.yt-ai-transcript-text {
+  color: var(--sidebar-text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Summary/Key Points Panel */
+.yt-ai-result {
+  color: var(--sidebar-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.yt-ai-result h1, .yt-ai-result h2, .yt-ai-result h3 {
+  color: var(--sidebar-text);
+  margin: 16px 0 8px;
+}
+
+.yt-ai-result h1:first-child,
+.yt-ai-result h2:first-child,
+.yt-ai-result h3:first-child {
+  margin-top: 0;
+}
+
+.yt-ai-result p {
+  margin: 8px 0;
+}
+
+.yt-ai-result ul, .yt-ai-result ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.yt-ai-result li {
+  margin: 4px 0;
+}
+
+.yt-ai-result strong, .yt-ai-result b {
+  color: var(--sidebar-accent);
+  font-weight: 600;
+}
+
+.yt-ai-result code {
+  background: var(--sidebar-bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Chat Panel */
+.yt-ai-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.yt-ai-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.yt-ai-chat-message {
+  margin-bottom: 16px;
+}
+
+.yt-ai-chat-message.user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.yt-ai-chat-message.user .yt-ai-chat-bubble {
+  background: var(--sidebar-accent);
+  color: white;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.yt-ai-chat-message.assistant .yt-ai-chat-bubble {
+  background: var(--sidebar-bg-tertiary);
+  color: var(--sidebar-text);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.yt-ai-chat-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.yt-ai-chat-input-container {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.yt-ai-chat-input {
+  flex: 1;
+  background: var(--sidebar-bg-tertiary);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 20px;
+  padding: 10px 16px;
+  color: var(--sidebar-text);
+  font-size: 13px;
+  outline: none;
+  resize: none;
+  max-height: 100px;
+}
+
+.yt-ai-chat-input:focus {
+  border-color: var(--sidebar-accent);
+}
+
+.yt-ai-chat-input::placeholder {
+  color: var(--sidebar-text-secondary);
+}
+
+.yt-ai-chat-send {
+  width: 40px;
+  height: 40px;
+  background: var(--sidebar-accent);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background var(--sidebar-transition);
+}
+
+.yt-ai-chat-send:hover {
+  background: var(--sidebar-accent-hover);
+}
+
+.yt-ai-chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Generate Button */
+.yt-ai-generate-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--sidebar-accent);
+  border: none;
+  border-radius: var(--sidebar-radius);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--sidebar-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.yt-ai-generate-btn:hover {
+  background: var(--sidebar-accent-hover);
+}
+
+.yt-ai-generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Copy Button */
+.yt-ai-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--sidebar-bg-tertiary);
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--sidebar-radius);
+  color: var(--sidebar-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--sidebar-transition);
+  margin-bottom: 16px;
+}
+
+.yt-ai-copy-btn:hover {
+  background: var(--sidebar-border);
+  color: var(--sidebar-text);
+}
+
+.yt-ai-copy-btn.copied {
+  color: var(--sidebar-success);
+  border-color: var(--sidebar-success);
+}
+
+/* Loading State */
+.yt-ai-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--sidebar-text-secondary);
+}
+
+.yt-ai-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--sidebar-border);
+  border-top-color: var(--sidebar-accent);
+  border-radius: 50%;
+  animation: yt-ai-spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes yt-ai-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.yt-ai-error {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid var(--sidebar-error);
+  border-radius: var(--sidebar-radius);
+  padding: 16px;
+  color: var(--sidebar-error);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.yt-ai-error-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Empty State */
+.yt-ai-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--sidebar-text-secondary);
+}
+
+.yt-ai-empty svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.yt-ai-empty p {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* No API Key */
+.yt-ai-no-api-key {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.yt-ai-no-api-key h3 {
+  color: var(--sidebar-text);
+  margin-bottom: 12px;
+}
+
+.yt-ai-no-api-key p {
+  color: var(--sidebar-text-secondary);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.yt-ai-settings-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--sidebar-accent);
+  color: white;
+  border: none;
+  border-radius: var(--sidebar-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--sidebar-transition);
+}
+
+.yt-ai-settings-link:hover {
+  background: var(--sidebar-accent-hover);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1200px) {
+  #yt-ai-summarizer-sidebar {
+    width: 340px;
+  }
+}
+
+@media (max-width: 900px) {
+  #yt-ai-summarizer-sidebar {
+    width: 100%;
+    max-width: 380px;
+  }
+}
+

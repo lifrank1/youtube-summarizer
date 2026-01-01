@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube AI Summarizer - Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <header class="settings-header">
+      <h1>YouTube AI Summarizer</h1>
+      <p class="subtitle">Configure your extension settings</p>
+    </header>
+
+    <main class="settings-content">
+      <!-- API Key Section -->
+      <section class="settings-section">
+        <h2>Gemini API Key</h2>
+        <p class="section-description">
+          Enter your Google Gemini API key to enable AI features. 
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Get your API key here</a>
+        </p>
+        
+        <div class="input-group">
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="apiKey" 
+              placeholder="Enter your Gemini API key"
+              autocomplete="off"
+            >
+            <button type="button" id="toggleVisibility" class="icon-btn" title="Toggle visibility">
+              <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <div class="button-group">
+            <button type="button" id="saveApiKey" class="btn btn-primary">Save Key</button>
+            <button type="button" id="testApiKey" class="btn btn-secondary">Test Key</button>
+          </div>
+        </div>
+        
+        <div id="apiKeyStatus" class="status-message hidden"></div>
+      </section>
+
+      <!-- Settings Section -->
+      <section class="settings-section">
+        <h2>Preferences</h2>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="sidebarPosition">Sidebar Position</label>
+            <p class="setting-description">Choose where the sidebar appears on YouTube</p>
+          </div>
+          <select id="sidebarPosition">
+            <option value="right">Right</option>
+            <option value="left">Left</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="autoSummarize">Auto-Summarize</label>
+            <p class="setting-description">Automatically generate summary when opening a video</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="autoSummarize">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Data Section -->
+      <section class="settings-section">
+        <h2>Data Management</h2>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Clear Chat History</label>
+            <p class="setting-description">Remove all saved chat conversations</p>
+          </div>
+          <button type="button" id="clearChatHistory" class="btn btn-danger-outline">Clear History</button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Clear All Data</label>
+            <p class="setting-description">Remove all extension data including API key</p>
+          </div>
+          <button type="button" id="clearAllData" class="btn btn-danger">Clear All</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="settings-footer">
+      <p>YouTube AI Summarizer v1.0.0</p>
+    </footer>
+  </div>
+
+  <script src="settings.js" type="module"></script>
+</body>
+</html>
+
