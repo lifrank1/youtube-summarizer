@@ -66,16 +66,16 @@
     return titleElement?.textContent?.trim() || '';
   }
   
+  // Icons for collapse
+  const chevronDown = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+  const chevronUp = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>';
+
   // Create sidebar HTML
   function createSidebar() {
     sidebar = document.createElement('div');
     sidebar.id = 'yt-ai-summarizer-sidebar';
     
     sidebar.innerHTML = `
-      <button class="yt-ai-toggle-btn" title="Toggle sidebar">
-        ${icons.chevronLeft}
-      </button>
-      
       <div class="yt-ai-header">
         <h2>
           <span class="yt-ai-header-logo">${icons.play}</span>
@@ -84,6 +84,9 @@
         <div class="yt-ai-header-actions">
           <button class="yt-ai-icon-btn" id="yt-ai-settings-btn" title="Settings">
             ${icons.settings}
+          </button>
+          <button class="yt-ai-collapse-btn" id="yt-ai-collapse-btn" title="Collapse">
+            ${chevronUp}
           </button>
         </div>
       </div>
@@ -142,15 +145,47 @@
       </div>
     `;
     
-    document.body.appendChild(sidebar);
+    // Insert into YouTube's secondary column (recommended videos area)
+    insertIntoSecondary();
     setupEventListeners();
     loadSettings();
   }
   
+  // Insert sidebar into YouTube's secondary column
+  function insertIntoSecondary() {
+    const secondary = document.querySelector('#secondary, #secondary-inner, ytd-watch-next-secondary-results-renderer');
+    
+    if (secondary) {
+      // Insert at the beginning of the secondary column
+      secondary.insertBefore(sidebar, secondary.firstChild);
+      log('Sidebar inserted into #secondary');
+    } else {
+      // Fallback: wait for secondary to appear
+      log('Waiting for #secondary element...');
+      const observer = new MutationObserver((mutations, obs) => {
+        const sec = document.querySelector('#secondary, #secondary-inner');
+        if (sec) {
+          sec.insertBefore(sidebar, sec.firstChild);
+          log('Sidebar inserted into #secondary (via observer)');
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Timeout fallback - append to body if secondary never appears
+      setTimeout(() => {
+        if (!sidebar.parentElement) {
+          log('Secondary never found, appending to body');
+          document.body.appendChild(sidebar);
+        }
+      }, 5000);
+    }
+  }
+  
   // Setup event listeners
   function setupEventListeners() {
-    // Toggle sidebar
-    sidebar.querySelector('.yt-ai-toggle-btn').addEventListener('click', toggleSidebar);
+    // Collapse sidebar
+    sidebar.querySelector('#yt-ai-collapse-btn').addEventListener('click', toggleSidebar);
     
     // Settings button
     sidebar.querySelector('#yt-ai-settings-btn').addEventListener('click', openSettings);
@@ -189,8 +224,13 @@
       const result = await chrome.storage.local.get('extension_settings');
       const settings = result.extension_settings || {};
       
-      if (settings.sidebarPosition === 'left') {
-        sidebar.classList.add('left');
+      // Start collapsed if user preference
+      if (settings.startCollapsed) {
+        isCollapsed = true;
+        sidebar.classList.add('collapsed');
+        const btn = sidebar.querySelector('#yt-ai-collapse-btn');
+        btn.innerHTML = chevronDown;
+        btn.title = 'Expand';
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -201,6 +241,11 @@
   function toggleSidebar() {
     isCollapsed = !isCollapsed;
     sidebar.classList.toggle('collapsed', isCollapsed);
+    
+    // Update button icon
+    const btn = sidebar.querySelector('#yt-ai-collapse-btn');
+    btn.innerHTML = isCollapsed ? chevronDown : chevronUp;
+    btn.title = isCollapsed ? 'Expand' : 'Collapse';
   }
   
   // Open settings
