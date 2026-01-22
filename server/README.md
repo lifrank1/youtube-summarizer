@@ -17,7 +17,7 @@ pip install -r requirements.txt
 python server.py
 ```
 
-The server will start at `http://localhost:5000`
+The server will start at `http://127.0.0.1:5050`
 
 ## API Endpoints
 
@@ -31,7 +31,7 @@ Fetch transcript for a YouTube video.
 
 **Example:**
 ```
-http://localhost:5000/transcript?v=dQw4w9WgXcQ
+http://127.0.0.1:5050/transcript?v=dQw4w9WgXcQ
 ```
 
 **Response:**

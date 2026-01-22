@@ -1,17 +1,23 @@
 # YouTube AI Summarizer
 
-A Chrome extension that provides instant YouTube video transcripts with AI-powered summaries, key points extraction, and chat features using Google's Gemini API.
+Chrome extension for instant YouTube transcripts with AI summaries, key points, and chat — powered by Gemini.
 
-## Setup
+![Screenshot](sample.png)
 
-### 1. Install the Chrome Extension
+## Quick Start
 
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top right)
-3. Click **Load unpacked** and select this project folder
-4. Click the extension icon and add your Gemini API key in Settings
+### 1. Get a Free Gemini API Key
 
-### 2. Start the Transcript Server
+Go to [Google AI Studio](https://aistudio.google.com/app/apikey) → Create API Key → Copy it
+
+### 2. Install Extension
+
+1. Clone this repo
+2. Go to `chrome://extensions/` → Enable **Developer mode**
+3. Click **Load unpacked** → Select this folder
+4. Click extension icon → **Settings** → Paste your API key
+
+### 3. Start Transcript Server
 
 ```bash
 cd server
@@ -19,7 +25,17 @@ pip install -r requirements.txt
 python server.py
 ```
 
-### 3. Use It
+### 4. Done!
 
-Navigate to any YouTube video, click the extension icon, and get transcripts, summaries, key points, or chat with the AI about the video content.
+Open any YouTube video — the AI panel appears above recommended videos.
 
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| No transcript | Make sure `python server.py` is running |
+| AI not working | Check your API key in Settings |
+
+## License
+
+MIT
