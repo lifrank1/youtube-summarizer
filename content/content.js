@@ -1000,10 +1000,15 @@
   
   // Generate summary
   async function generateSummary() {
+    log('=== Generate Summary clicked ===');
+    
     if (!transcript) {
+      logWarn('No transcript available for summary');
       showError('summary', 'No transcript available');
       return;
     }
+    
+    log('Transcript length:', transcript.fullText?.length, 'chars');
     
     const btn = sidebar.querySelector('#yt-ai-generate-summary');
     const resultDiv = sidebar.querySelector('#yt-ai-summary-result');
@@ -1013,6 +1018,7 @@
     resultDiv.innerHTML = '';
     
     try {
+      log('Sending generateSummary message to background script...');
       const response = await chrome.runtime.sendMessage({
         action: 'generateSummary',
         data: {
@@ -1021,9 +1027,14 @@
         }
       });
       
+      log('Background script response:', response ? 'received' : 'null/undefined');
+      
       if (response.error) {
+        logError('Summary generation error:', response.error);
         throw new Error(response.error);
       }
+      
+      log('Summary generated successfully, length:', response.summary?.length);
       
       btn.style.display = 'none';
       resultDiv.innerHTML = `
@@ -1039,6 +1050,7 @@
       });
       
     } catch (error) {
+      logError('generateSummary failed:', error.message);
       showError('summary', error.message);
       btn.disabled = false;
       btn.innerHTML = `${icons.sparkles} Generate Summary`;
@@ -1047,10 +1059,15 @@
   
   // Generate key points
   async function generateKeyPoints() {
+    log('=== Extract Key Points clicked ===');
+    
     if (!transcript) {
+      logWarn('No transcript available for key points');
       showError('keypoints', 'No transcript available');
       return;
     }
+    
+    log('Transcript length:', transcript.fullText?.length, 'chars');
     
     const btn = sidebar.querySelector('#yt-ai-generate-keypoints');
     const resultDiv = sidebar.querySelector('#yt-ai-keypoints-result');
@@ -1060,6 +1077,7 @@
     resultDiv.innerHTML = '';
     
     try {
+      log('Sending extractKeyPoints message to background script...');
       const response = await chrome.runtime.sendMessage({
         action: 'extractKeyPoints',
         data: {
@@ -1067,9 +1085,14 @@
         }
       });
       
+      log('Background script response:', response ? 'received' : 'null/undefined');
+      
       if (response.error) {
+        logError('Key points extraction error:', response.error);
         throw new Error(response.error);
       }
+      
+      log('Key points extracted successfully, length:', response.keyPoints?.length);
       
       btn.style.display = 'none';
       resultDiv.innerHTML = `
@@ -1085,6 +1108,7 @@
       });
       
     } catch (error) {
+      logError('generateKeyPoints failed:', error.message);
       showError('keypoints', error.message);
       btn.disabled = false;
       btn.innerHTML = `${icons.sparkles} Extract Key Points`;
@@ -1096,7 +1120,13 @@
     const input = sidebar.querySelector('#yt-ai-chat-input');
     const message = input.value.trim();
     
-    if (!message || !transcript) return;
+    log('=== Chat message sent ===');
+    log('Message:', message?.substring(0, 50) + (message?.length > 50 ? '...' : ''));
+    
+    if (!message || !transcript) {
+      logWarn('Chat aborted: no message or transcript', { hasMessage: !!message, hasTranscript: !!transcript });
+      return;
+    }
     
     const messagesDiv = sidebar.querySelector('#yt-ai-chat-messages');
     const sendBtn = sidebar.querySelector('#yt-ai-chat-send');
@@ -1130,6 +1160,7 @@
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
     
     try {
+      log('Sending chat message to background script...');
       const response = await chrome.runtime.sendMessage({
         action: 'chat',
         data: {
@@ -1139,9 +1170,14 @@
         }
       });
       
+      log('Background script response:', response ? 'received' : 'null/undefined');
+      
       if (response.error) {
+        logError('Chat error:', response.error);
         throw new Error(response.error);
       }
+      
+      log('Chat response received, length:', response.response?.length);
       
       // Remove loading
       document.getElementById(loadingId)?.remove();
@@ -1156,6 +1192,7 @@
       chatHistory = response.history;
       
     } catch (error) {
+      logError('sendChatMessage failed:', error.message);
       document.getElementById(loadingId)?.remove();
       messagesDiv.innerHTML += `
         <div class="yt-ai-chat-message assistant">
