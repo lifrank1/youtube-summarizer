@@ -44,6 +44,7 @@
       currentVideoId = videoId;
       transcript = null;
       chatHistory = [];
+      resetPanels();
     }
     
     if (!sidebar) {
@@ -258,10 +259,59 @@
     sidebar.querySelectorAll('.yt-ai-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.tab === tabName);
     });
-    
+
     sidebar.querySelectorAll('.yt-ai-panel').forEach(panel => {
       panel.classList.toggle('active', panel.id === `yt-ai-${tabName}-panel`);
     });
+  }
+
+  // Reset panels when navigating to a new video
+  function resetPanels() {
+    if (!sidebar) return;
+
+    log('Resetting panels for new video');
+
+    // Reset Summary panel
+    const summaryBtn = sidebar.querySelector('#yt-ai-generate-summary');
+    const summaryResult = sidebar.querySelector('#yt-ai-summary-result');
+    if (summaryBtn) {
+      summaryBtn.style.display = '';
+      summaryBtn.disabled = false;
+      summaryBtn.innerHTML = `${icons.sparkles} Generate Summary`;
+    }
+    if (summaryResult) {
+      summaryResult.innerHTML = '';
+    }
+
+    // Reset Key Points panel
+    const keypointsBtn = sidebar.querySelector('#yt-ai-generate-keypoints');
+    const keypointsResult = sidebar.querySelector('#yt-ai-keypoints-result');
+    if (keypointsBtn) {
+      keypointsBtn.style.display = '';
+      keypointsBtn.disabled = false;
+      keypointsBtn.innerHTML = `${icons.sparkles} Extract Key Points`;
+    }
+    if (keypointsResult) {
+      keypointsResult.innerHTML = '';
+    }
+
+    // Reset Chat panel
+    const chatMessages = sidebar.querySelector('#yt-ai-chat-messages');
+    const chatInput = sidebar.querySelector('#yt-ai-chat-input');
+    if (chatMessages) {
+      chatMessages.innerHTML = `
+        <div class="yt-ai-empty">
+          <p>Ask questions about the video content. The AI will answer based on the transcript.</p>
+        </div>
+      `;
+    }
+    if (chatInput) {
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+    }
+
+    // Switch back to Transcript tab
+    switchTab('transcript');
   }
   
   // Python server URL
