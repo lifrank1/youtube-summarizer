@@ -28,6 +28,7 @@ python server.py
 ### 4. Done!
 
 Open any YouTube video — the AI panel appears above recommended videos.
+Set "DEBUG = false" to turn logs off
 
 ## Troubleshooting
 
