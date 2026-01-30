@@ -3,8 +3,6 @@ import {
   getApiKey, 
   saveApiKey, 
   removeApiKey,
-  getSettings, 
-  saveSettings, 
   clearChatHistory, 
   clearAllData 
 } from '../lib/storage.js';
@@ -17,8 +15,6 @@ const eyeIcon = document.getElementById('eyeIcon');
 const saveApiKeyBtn = document.getElementById('saveApiKey');
 const testApiKeyBtn = document.getElementById('testApiKey');
 const apiKeyStatus = document.getElementById('apiKeyStatus');
-const sidebarPositionSelect = document.getElementById('sidebarPosition');
-const autoSummarizeToggle = document.getElementById('autoSummarize');
 const clearChatHistoryBtn = document.getElementById('clearChatHistory');
 const clearAllDataBtn = document.getElementById('clearAllData');
 
@@ -39,10 +35,6 @@ async function loadSettings() {
     apiKeyInput.value = apiKey;
   }
   
-  // Load other settings
-  const settings = await getSettings();
-  sidebarPositionSelect.value = settings.sidebarPosition || 'right';
-  autoSummarizeToggle.checked = settings.autoSummarize || false;
 }
 
 // Toggle password visibility
@@ -111,16 +103,6 @@ function showStatus(message, type) {
   }, 5000);
 }
 
-// Save sidebar position
-sidebarPositionSelect.addEventListener('change', async (e) => {
-  await saveSettings({ sidebarPosition: e.target.value });
-});
-
-// Save auto-summarize setting
-autoSummarizeToggle.addEventListener('change', async (e) => {
-  await saveSettings({ autoSummarize: e.target.checked });
-});
-
 // Clear chat history
 clearChatHistoryBtn.addEventListener('click', async () => {
   if (confirm('Are you sure you want to clear all chat history?')) {
@@ -139,8 +121,6 @@ clearAllDataBtn.addEventListener('click', async () => {
     const success = await clearAllData();
     if (success) {
       apiKeyInput.value = '';
-      sidebarPositionSelect.value = 'right';
-      autoSummarizeToggle.checked = false;
       showStatus('All data cleared', 'success');
     } else {
       showStatus('Failed to clear data', 'error');
