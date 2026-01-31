@@ -43,7 +43,7 @@ async function updateCacheStats() {
   if (stats.videoCount > 0) {
     cacheStatsSpan.textContent = `(${stats.videoCount} videos, ${stats.totalSize})`;
   } else {
-    cacheStatsSpan.textContent = '(empty)';
+    cacheStatsSpan.textContent = '';
   }
 }
 
