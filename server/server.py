@@ -159,17 +159,10 @@ def index():
 
 
 if __name__ == '__main__':
-    print('=' * 50)
-    print('YouTube Transcript Server')
-    print('=' * 50)
-    print('Server running at http://localhost:5000')
     print('')
-    print('Endpoints:')
-    print('  GET /transcript?v=VIDEO_ID  - Fetch transcript')
-    print('  GET /health                 - Health check')
+    print('  YouTube Transcript Server')
+    print('  http://127.0.0.1:5050')
     print('')
-    print('Press Ctrl+C to stop')
-    print('=' * 50)
     
-    app.run(host='127.0.0.1', port=5050, debug=True)
+    app.run(host='127.0.0.1', port=5050, debug=False)
 
