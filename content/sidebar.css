@@ -405,6 +405,18 @@
   border-color: var(--sidebar-success);
 }
 
+/* Cached Badge */
+.yt-ai-cached-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--sidebar-bg-tertiary);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 12px;
+  font-size: 10px;
+  color: var(--sidebar-text-secondary);
+  margin-bottom: 12px;
+}
+
 /* Loading State */
 .yt-ai-loading {
   display: flex;

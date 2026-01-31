@@ -15,6 +15,44 @@
   let chatHistory = [];
   let isCollapsed = false;
   
+  // Cache helpers (using chrome.storage.local)
+  const CACHE_KEY = 'video_cache';
+  
+  async function getVideoCache(videoId) {
+    try {
+      const result = await chrome.storage.local.get(CACHE_KEY);
+      const cache = result[CACHE_KEY] || {};
+      return cache[videoId] || { transcript: null, summary: null };
+    } catch (e) {
+      logError('Cache read error:', e);
+      return { transcript: null, summary: null };
+    }
+  }
+  
+  async function cacheTranscript(videoId, transcriptData) {
+    try {
+      const result = await chrome.storage.local.get(CACHE_KEY);
+      const cache = result[CACHE_KEY] || {};
+      cache[videoId] = { ...cache[videoId], transcript: transcriptData, cachedAt: Date.now() };
+      await chrome.storage.local.set({ [CACHE_KEY]: cache });
+      log('Transcript cached for', videoId);
+    } catch (e) {
+      logError('Cache write error:', e);
+    }
+  }
+  
+  async function cacheSummary(videoId, summaryText) {
+    try {
+      const result = await chrome.storage.local.get(CACHE_KEY);
+      const cache = result[CACHE_KEY] || {};
+      cache[videoId] = { ...cache[videoId], summary: summaryText, cachedAt: Date.now() };
+      await chrome.storage.local.set({ [CACHE_KEY]: cache });
+      log('Summary cached for', videoId);
+    } catch (e) {
+      logError('Cache write error:', e);
+    }
+  }
+  
   // Icons as SVG strings
   const icons = {
     chevronLeft: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>',
@@ -302,6 +340,37 @@
     log('Video ID:', currentVideoId);
     
     try {
+      // Check cache first
+      log('Checking cache...');
+      const cached = await getVideoCache(currentVideoId);
+      if (cached.transcript) {
+        log('✓ Found cached transcript!', cached.transcript.segments?.length, 'segments');
+        transcript = cached.transcript;
+        renderTranscript(panel);
+        
+        // Also restore cached summary if available
+        if (cached.summary) {
+          log('✓ Found cached summary!');
+          const summaryResult = sidebar.querySelector('#yt-ai-summary-result');
+          const summaryBtn = sidebar.querySelector('#yt-ai-generate-summary');
+          if (summaryResult && summaryBtn) {
+            summaryBtn.style.display = 'none';
+            summaryResult.innerHTML = `
+              <button class="yt-ai-copy-btn" id="yt-ai-copy-summary">
+                ${icons.copy}
+                <span>Copy summary</span>
+              </button>
+              <div class="yt-ai-cached-badge">Cached</div>
+              ${marked(cached.summary)}
+            `;
+            summaryResult.querySelector('#yt-ai-copy-summary')?.addEventListener('click', () => {
+              copyText(cached.summary, '#yt-ai-copy-summary');
+            });
+          }
+        }
+        return;
+      }
+      
       // Method 0: Try Python server first (most reliable)
       log('Method 0: Trying Python server...');
       transcript = await fetchFromPythonServer(currentVideoId);
@@ -340,6 +409,10 @@
       
       log('SUCCESS! Transcript loaded with', transcript.segments.length, 'segments');
       log('First segment:', transcript.segments[0]);
+      
+      // Cache the transcript
+      log('Caching transcript...');
+      await cacheTranscript(currentVideoId, transcript);
       
       // Render transcript
       renderTranscript(panel);
@@ -1063,6 +1136,10 @@
       }
       
       log('Summary generated successfully, length:', response.summary?.length);
+      
+      // Cache the summary
+      log('Caching summary...');
+      await cacheSummary(currentVideoId, response.summary);
       
       btn.style.display = 'none';
       resultDiv.innerHTML = `

@@ -4,7 +4,9 @@ import {
   saveApiKey, 
   removeApiKey,
   clearChatHistory, 
-  clearAllData 
+  clearAllData,
+  clearVideoCache,
+  getCacheStats
 } from '../lib/storage.js';
 import { testApiKey } from '../lib/gemini.js';
 
@@ -15,6 +17,8 @@ const eyeIcon = document.getElementById('eyeIcon');
 const saveApiKeyBtn = document.getElementById('saveApiKey');
 const testApiKeyBtn = document.getElementById('testApiKey');
 const apiKeyStatus = document.getElementById('apiKeyStatus');
+const clearVideoCacheBtn = document.getElementById('clearVideoCache');
+const cacheStatsSpan = document.getElementById('cacheStats');
 const clearChatHistoryBtn = document.getElementById('clearChatHistory');
 const clearAllDataBtn = document.getElementById('clearAllData');
 
@@ -35,6 +39,17 @@ async function loadSettings() {
     apiKeyInput.value = apiKey;
   }
   
+  // Load cache stats
+  await updateCacheStats();
+}
+
+async function updateCacheStats() {
+  const stats = await getCacheStats();
+  if (stats.videoCount > 0) {
+    cacheStatsSpan.textContent = `(${stats.videoCount} videos, ${stats.totalSize})`;
+  } else {
+    cacheStatsSpan.textContent = '(empty)';
+  }
 }
 
 // Toggle password visibility
@@ -102,6 +117,19 @@ function showStatus(message, type) {
     apiKeyStatus.classList.add('hidden');
   }, 5000);
 }
+
+// Clear video cache
+clearVideoCacheBtn.addEventListener('click', async () => {
+  if (confirm('Clear all cached transcripts and summaries?')) {
+    const success = await clearVideoCache();
+    if (success) {
+      showStatus('Video cache cleared', 'success');
+      await updateCacheStats();
+    } else {
+      showStatus('Failed to clear video cache', 'error');
+    }
+  }
+});
 
 // Clear chat history
 clearChatHistoryBtn.addEventListener('click', async () => {
