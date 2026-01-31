@@ -1,10 +1,7 @@
 // Settings Page JavaScript
 import { 
   getApiKey, 
-  saveApiKey, 
-  removeApiKey,
-  clearChatHistory, 
-  clearAllData,
+  saveApiKey,
   clearVideoCache,
   getCacheStats
 } from '../lib/storage.js';
@@ -19,8 +16,6 @@ const testApiKeyBtn = document.getElementById('testApiKey');
 const apiKeyStatus = document.getElementById('apiKeyStatus');
 const clearVideoCacheBtn = document.getElementById('clearVideoCache');
 const cacheStatsSpan = document.getElementById('cacheStats');
-const clearChatHistoryBtn = document.getElementById('clearChatHistory');
-const clearAllDataBtn = document.getElementById('clearAllData');
 
 // Eye icons for password visibility
 const eyeOpenPath = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
@@ -127,31 +122,6 @@ clearVideoCacheBtn.addEventListener('click', async () => {
       await updateCacheStats();
     } else {
       showStatus('Failed to clear video cache', 'error');
-    }
-  }
-});
-
-// Clear chat history
-clearChatHistoryBtn.addEventListener('click', async () => {
-  if (confirm('Are you sure you want to clear all chat history?')) {
-    const success = await clearChatHistory();
-    if (success) {
-      showStatus('Chat history cleared', 'success');
-    } else {
-      showStatus('Failed to clear chat history', 'error');
-    }
-  }
-});
-
-// Clear all data
-clearAllDataBtn.addEventListener('click', async () => {
-  if (confirm('Are you sure you want to clear ALL extension data? This includes your API key and all settings.')) {
-    const success = await clearAllData();
-    if (success) {
-      apiKeyInput.value = '';
-      showStatus('All data cleared', 'success');
-    } else {
-      showStatus('Failed to clear data', 'error');
     }
   }
 });

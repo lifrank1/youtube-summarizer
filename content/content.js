@@ -91,6 +91,45 @@
     }
     
     loadTranscript();
+    loadChatHistory();
+  }
+  
+  // Load chat history from storage
+  async function loadChatHistory() {
+    try {
+      log('Loading chat history for video:', currentVideoId);
+      const response = await chrome.runtime.sendMessage({
+        action: 'getChatHistory',
+        data: { videoId: currentVideoId }
+      });
+      
+      if (response.history && response.history.length > 0) {
+        log('Found', response.history.length, 'chat messages');
+        chatHistory = response.history;
+        renderChatHistory();
+      } else {
+        log('No chat history found');
+      }
+    } catch (error) {
+      logError('Error loading chat history:', error);
+    }
+  }
+  
+  // Render chat history in the UI
+  function renderChatHistory() {
+    const messagesDiv = sidebar?.querySelector('#yt-ai-chat-messages');
+    if (!messagesDiv || chatHistory.length === 0) return;
+    
+    messagesDiv.innerHTML = chatHistory.map(msg => `
+      <div class="yt-ai-chat-message ${msg.role === 'user' ? 'user' : 'assistant'}">
+        <div class="yt-ai-chat-bubble">
+          ${msg.role === 'user' ? escapeHtml(msg.content) : marked(msg.content)}
+        </div>
+      </div>
+    `).join('');
+    
+    // Scroll to bottom
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
   }
   
   // Get video ID from URL
