@@ -95,7 +95,6 @@
       <div class="yt-ai-tabs">
         <button class="yt-ai-tab active" data-tab="transcript">Transcript</button>
         <button class="yt-ai-tab" data-tab="summary">Summary</button>
-        <button class="yt-ai-tab" data-tab="keypoints">Key Points</button>
         <button class="yt-ai-tab" data-tab="chat">Chat</button>
       </div>
       
@@ -113,14 +112,6 @@
             Generate Summary
           </button>
           <div class="yt-ai-result" id="yt-ai-summary-result"></div>
-        </div>
-        
-        <div class="yt-ai-panel" id="yt-ai-keypoints-panel">
-          <button class="yt-ai-generate-btn" id="yt-ai-generate-keypoints">
-            ${icons.sparkles}
-            Extract Key Points
-          </button>
-          <div class="yt-ai-result" id="yt-ai-keypoints-result"></div>
         </div>
         
         <div class="yt-ai-panel" id="yt-ai-chat-panel">
@@ -198,7 +189,6 @@
     
     // Generate buttons
     sidebar.querySelector('#yt-ai-generate-summary').addEventListener('click', generateSummary);
-    sidebar.querySelector('#yt-ai-generate-keypoints').addEventListener('click', generateKeyPoints);
     
     // Chat
     const chatInput = sidebar.querySelector('#yt-ai-chat-input');
@@ -281,18 +271,6 @@
     }
     if (summaryResult) {
       summaryResult.innerHTML = '';
-    }
-
-    // Reset Key Points panel
-    const keypointsBtn = sidebar.querySelector('#yt-ai-generate-keypoints');
-    const keypointsResult = sidebar.querySelector('#yt-ai-keypoints-result');
-    if (keypointsBtn) {
-      keypointsBtn.style.display = '';
-      keypointsBtn.disabled = false;
-      keypointsBtn.innerHTML = `${icons.sparkles} Extract Key Points`;
-    }
-    if (keypointsResult) {
-      keypointsResult.innerHTML = '';
     }
 
     // Reset Chat panel
@@ -1104,64 +1082,6 @@
       showError('summary', error.message);
       btn.disabled = false;
       btn.innerHTML = `${icons.sparkles} Generate Summary`;
-    }
-  }
-  
-  // Generate key points
-  async function generateKeyPoints() {
-    log('=== Extract Key Points clicked ===');
-    
-    if (!transcript) {
-      logWarn('No transcript available for key points');
-      showError('keypoints', 'No transcript available');
-      return;
-    }
-    
-    log('Transcript length:', transcript.fullText?.length, 'chars');
-    
-    const btn = sidebar.querySelector('#yt-ai-generate-keypoints');
-    const resultDiv = sidebar.querySelector('#yt-ai-keypoints-result');
-    
-    btn.disabled = true;
-    btn.innerHTML = `<div class="yt-ai-spinner" style="width:20px;height:20px;border-width:2px;margin:0"></div> Extracting...`;
-    resultDiv.innerHTML = '';
-    
-    try {
-      log('Sending extractKeyPoints message to background script...');
-      const response = await chrome.runtime.sendMessage({
-        action: 'extractKeyPoints',
-        data: {
-          transcript: transcript.fullText
-        }
-      });
-      
-      log('Background script response:', response ? 'received' : 'null/undefined');
-      
-      if (response.error) {
-        logError('Key points extraction error:', response.error);
-        throw new Error(response.error);
-      }
-      
-      log('Key points extracted successfully, length:', response.keyPoints?.length);
-      
-      btn.style.display = 'none';
-      resultDiv.innerHTML = `
-        <button class="yt-ai-copy-btn" id="yt-ai-copy-keypoints">
-          ${icons.copy}
-          <span>Copy key points</span>
-        </button>
-        ${marked(response.keyPoints)}
-      `;
-      
-      resultDiv.querySelector('#yt-ai-copy-keypoints').addEventListener('click', () => {
-        copyText(response.keyPoints, '#yt-ai-copy-keypoints');
-      });
-      
-    } catch (error) {
-      logError('generateKeyPoints failed:', error.message);
-      showError('keypoints', error.message);
-      btn.disabled = false;
-      btn.innerHTML = `${icons.sparkles} Extract Key Points`;
     }
   }
   

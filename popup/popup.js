@@ -73,7 +73,6 @@ function setupEventListeners() {
   
   // Generate buttons
   document.getElementById('generate-summary').addEventListener('click', generateSummary);
-  document.getElementById('generate-keypoints').addEventListener('click', generateKeyPoints);
   
   // Chat
   document.getElementById('chat-send').addEventListener('click', sendChat);
@@ -503,40 +502,6 @@ async function generateSummary() {
         <path d="M12 3v18M5.5 8l13 8M5.5 16l13-8"/>
       </svg>
       Generate Summary
-    `;
-  }
-}
-
-async function generateKeyPoints() {
-  const btn = document.getElementById('generate-keypoints');
-  const content = document.getElementById('keypoints-content');
-  
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;margin:0"></div> Extracting...';
-  
-  try {
-    const response = await chrome.runtime.sendMessage({
-      action: 'extractKeyPoints',
-      data: {
-        transcript: transcript.fullText
-      }
-    });
-    
-    if (response.error) {
-      throw new Error(response.error);
-    }
-    
-    btn.classList.add('hidden');
-    content.innerHTML = marked(response.keyPoints);
-    
-  } catch (error) {
-    content.innerHTML = `<div class="error-message">${escapeHtml(error.message)}</div>`;
-    btn.disabled = false;
-    btn.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 3v18M5.5 8l13 8M5.5 16l13-8"/>
-      </svg>
-      Extract Key Points
     `;
   }
 }
