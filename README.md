@@ -1,4 +1,4 @@
-# YouTube AI Summarizer
+# YouTube Summarizer
 
 Chrome extension for instant YouTube transcripts with AI summaries, key points, and chat — powered by Gemini.
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "YouTube AI Summarizer",
+  "name": "YouTube Summarizer",
   "version": "1.0.0",
   "description": "Get instant YouTube transcripts with AI summaries, key points, and chat features powered by Gemini.",
   "permissions": [

@@ -66,7 +66,7 @@
   
   // Initialize
   function init() {
-    log('=== Initializing YT AI Summarizer ===');
+    log('=== Initializing YT Summarizer ===');
     log('URL:', location.href);
     
     const videoId = getVideoId();
@@ -117,8 +117,7 @@
     sidebar.innerHTML = `
       <div class="yt-ai-header">
         <h2>
-          <span class="yt-ai-header-logo">${icons.play}</span>
-          AI Summarizer
+          Youtube Summarizer
         </h2>
         <div class="yt-ai-header-actions">
           <button class="yt-ai-icon-btn" id="yt-ai-settings-btn" title="Settings">
