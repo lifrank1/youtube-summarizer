@@ -525,6 +525,19 @@ body {
   font-size: 12px;
 }
 
+/* Cached Badge */
+.cached-badge {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
 /* Loading in result */
 .result-loading {
   display: flex;

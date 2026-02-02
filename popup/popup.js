@@ -1,5 +1,5 @@
 // Popup JavaScript
-import { getApiKey } from '../lib/storage.js';
+import { getApiKey, getVideoCache, getChatHistory } from '../lib/storage.js';
 
 // Debug logging
 const DEBUG = true;
@@ -11,6 +11,7 @@ let currentTab = null;
 let videoId = null;
 let transcript = null;
 let chatHistory = [];
+let cachedSummary = null;
 
 // DOM Elements
 const views = {
@@ -23,6 +24,45 @@ const views = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', init);
+
+// Listen for storage changes to sync with sidebar
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local' || !videoId) return;
+  
+  // Sync video cache (transcript/summary)
+  if (changes.video_cache) {
+    const newCache = changes.video_cache.newValue || {};
+    const videoCache = newCache[videoId];
+    
+    if (videoCache) {
+      // Update summary if changed
+      if (videoCache.summary && videoCache.summary !== cachedSummary) {
+        log('Storage sync: new summary detected');
+        cachedSummary = videoCache.summary;
+        renderCachedSummary();
+      }
+      
+      // Update transcript if changed
+      if (videoCache.transcript && !transcript) {
+        log('Storage sync: new transcript detected');
+        transcript = videoCache.transcript;
+        renderTranscript();
+      }
+    }
+  }
+  
+  // Sync chat history
+  if (changes.chat_history) {
+    const newHistory = changes.chat_history.newValue || {};
+    const videoChatHistory = newHistory[videoId];
+    
+    if (videoChatHistory && videoChatHistory.length !== chatHistory.length) {
+      log('Storage sync: chat history updated');
+      chatHistory = videoChatHistory;
+      renderChatHistory();
+    }
+  }
+});
 
 async function init() {
   // Setup event listeners
@@ -130,7 +170,23 @@ async function loadTranscript() {
   log('Loading transcript for video:', videoId);
   
   try {
-    // Try to get transcript from content script first (most reliable)
+    // Check storage cache first for transcript and summary
+    log('Checking storage cache...');
+    const cache = await getVideoCache(videoId);
+    if (cache.transcript) {
+      log('Found cached transcript with', cache.transcript.segments?.length, 'segments');
+      transcript = cache.transcript;
+    }
+    if (cache.summary) {
+      log('Found cached summary');
+      cachedSummary = cache.summary;
+    }
+    
+    // Also load chat history from storage
+    chatHistory = await getChatHistory(videoId);
+    log('Loaded', chatHistory.length, 'chat messages from storage');
+    
+    // Try to get transcript from content script (may have fresher data)
     log('Attempting to get transcript from content script...');
     try {
       const response = await chrome.tabs.sendMessage(currentTab.id, { action: 'getTranscript' });
@@ -141,6 +197,10 @@ async function loadTranscript() {
         transcript = response.transcript;
         document.getElementById('video-title').textContent = response.title || 'Video';
         renderTranscript();
+        renderChatHistory();
+        if (cachedSummary) {
+          renderCachedSummary();
+        }
         showView('main');
         return;
       } else {
@@ -148,6 +208,18 @@ async function loadTranscript() {
       }
     } catch (e) {
       log('Content script not ready or error:', e.message);
+    }
+    
+    // If we have cached transcript, use it
+    if (transcript?.segments?.length) {
+      log('Using cached transcript');
+      renderTranscript();
+      renderChatHistory();
+      if (cachedSummary) {
+        renderCachedSummary();
+      }
+      showView('main');
+      return;
     }
     
     // Fallback: Fetch the video page directly
@@ -175,6 +247,10 @@ async function loadTranscript() {
     
     // Render transcript
     renderTranscript();
+    renderChatHistory();
+    if (cachedSummary) {
+      renderCachedSummary();
+    }
     showView('main');
     
   } catch (error) {
@@ -426,6 +502,29 @@ function renderTranscript() {
       seekVideo(time);
     });
   });
+}
+
+function renderChatHistory() {
+  if (!chatHistory || chatHistory.length === 0) return;
+  
+  const messagesDiv = document.getElementById('chat-messages');
+  messagesDiv.querySelector('.chat-empty')?.remove();
+  
+  messagesDiv.innerHTML = chatHistory.map(msg => `
+    <div class="chat-message ${msg.role === 'user' ? 'user' : 'assistant'}">
+      <div class="chat-bubble">${msg.role === 'user' ? escapeHtml(msg.content) : marked(msg.content)}</div>
+    </div>
+  `).join('');
+  
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function renderCachedSummary() {
+  const btn = document.getElementById('generate-summary');
+  const content = document.getElementById('summary-content');
+  
+  btn.classList.add('hidden');
+  content.innerHTML = `<div class="cached-badge">Cached</div>${marked(cachedSummary)}`;
 }
 
 async function seekVideo(time) {
