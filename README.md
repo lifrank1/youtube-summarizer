@@ -8,7 +8,7 @@ Chrome extension for instant YouTube transcripts with AI summaries, key points, 
 
 ### 1. Get a Free Gemini API Key
 
-Go to [Google AI Studio](https://aistudio.google.com/app/apikey) → Create API Key → Copy it
+Go to [Google AI Studio](https://aistudio.google.com/app/apikey) → Create API Key
 
 ### 2. Install Extension
 
@@ -31,7 +31,3 @@ python server.py
 |-------|-----|
 | No transcript | Make sure `python server.py` is running |
 | AI not working | Check your API key in Settings |
-
-## License
-
-MIT
