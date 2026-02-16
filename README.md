@@ -25,9 +25,11 @@ pip install -r requirements.txt
 python server.py
 ```
 
+### 4. (If Needed) Enable Chrome to Find Local Networks
+
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| No transcript | Make sure `python server.py` is running |
+| No transcript | Make sure `python server.py` is running and check if Chrome has permissions to see local networks |
 | AI not working | Check your API key in Settings |
